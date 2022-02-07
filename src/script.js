@@ -1,14 +1,15 @@
 import './style.css'
 import p5 from "p5";
 import SimplexNoise from 'simplex-noise';
-
+const simplex = new SimplexNoise('seed');
 
 const sketch = p5 => {
 
     //variables
-    let numFrames = 70;
+    let numFrames = 100;
     let m = 1000;
     let delayFactor = 1.0;
+    let motion_radius = 1.0;
     const TWO_PI = 6.28318530717958647693;
 
 
@@ -36,20 +37,24 @@ const sketch = p5 => {
  
   p5.stroke(255);
   p5.strokeWeight(1);
+    
 
   function x1(t){
-    return 0.25 * p5.width + 50 * p5.cos(TWO_PI * t);
+    const seed = 1337;
+    return 0.25* p5.width + 150 * simplex.noise2D(seed + motion_radius*p5.cos(TWO_PI*t),motion_radius*p5.sin(TWO_PI*t));
   }
   function y1(t){
-    return 0.5 * p5.height + 150 * p5.sin(TWO_PI * t);
+    const seed = 1515;
+    return 0.5* p5.height + 150 * simplex.noise2D(seed + motion_radius*p5.cos(TWO_PI*t),motion_radius*p5.sin(TWO_PI*t));
   }
    
   function x2(t){
-    return 0.75 * p5.width + 150 * p5.cos(2 * TWO_PI * t);
+    const seed = 1621;
+    return 0.75* p5.width + 150 * simplex.noise2D(seed + motion_radius*p5.cos(TWO_PI*t),motion_radius*p5.sin(TWO_PI*t));
   }
-
   function y2(t){
-    return 0.5 * p5.height + 50 * p5.sin(2 * TWO_PI * t);
+    const seed = 1313;
+    return 0.5* p5.height + 150 * simplex.noise2D(seed + motion_radius*p5.cos(TWO_PI*t),motion_radius*p5.sin(TWO_PI*t));
   }
     
   p5.ellipse(x1(t),y1(t),10,10);
