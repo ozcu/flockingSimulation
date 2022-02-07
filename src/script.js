@@ -1,113 +1,79 @@
 import './style.css'
-import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import p5 from "p5";
+import SimplexNoise from 'simplex-noise';
 
-import boilerVertexShader from './shaders/vertex.glsl'
-import boilerFragmentShader from './shaders/fragment.glsl'
 
-/**
- * Base
- */
-// Canvas
-const canvas = document.querySelector('canvas.webgl')
+const sketch = p5 => {
 
-// Scene
-const scene = new THREE.Scene()
-scene.background = new THREE.Color(0x132020)
+    //variables
+    let numFrames = 70;
+    let m = 1000;
+    let delayFactor = 1.0;
+    const TWO_PI = 6.28318530717958647693;
 
-/**
- * Sizes
- */
-const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
+
+  // Variables scoped within p5
+  const canvasWidth = p5.windowWidth;
+  const canvasHeight = p5.windowHeight;
+
+
+  // make library globally available
+  window.p5 = p5;
+
+  // Setup function
+
+  p5.setup = () => {
+    let canvas = p5.createCanvas(canvasWidth, canvasHeight);
+  };
+
+  // Draw function
+
+  p5.draw = () => {
+    p5.background(0);
+
+    
+  var t=0.5*(p5.frameCount-1)/numFrames;
+ 
+  p5.stroke(255);
+  p5.strokeWeight(1);
+
+  function x1(t){
+    return 0.25 * p5.width + 50 * p5.cos(TWO_PI * t);
+  }
+  function y1(t){
+    return 0.5 * p5.height + 150 * p5.sin(TWO_PI * t);
+  }
+   
+  function x2(t){
+    return 0.75 * p5.width + 150 * p5.cos(2 * TWO_PI * t);
+  }
+
+  function y2(t){
+    return 0.5 * p5.height + 50 * p5.sin(2 * TWO_PI * t);
+  }
+    
+  p5.ellipse(x1(t),y1(t),10,10);
+  p5.ellipse(x2(t),y2(t),10,10);
+
+  for(var i=0;i<=m;i++){
+    var tt = 1.0*i/m;
+   
+    var x = p5.lerp(x1(t-delayFactor*tt),x2(t-delayFactor*(1-tt)),tt);
+    var y = p5.lerp(y1(t-delayFactor*tt),y2(t-delayFactor*(1-tt)),tt);
+   
+    p5.point(x,y);
+  }
+
+
+
+  };
+};
+
+new p5(sketch);
+
+export default sketch;
+
+p5.windowResized = () => {
+    resizeCanvas(windowWidth, windowHeight);
+    
 }
-
-window.addEventListener('resize', () =>
-{
-    // Update sizes
-    sizes.width = window.innerWidth
-    sizes.height = window.innerHeight
-
-    // Update camera
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
-
-    // Update renderer
-    renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-})
-
-/**
- * Camera
- */
-// Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 3
-camera.position.y = 1.5
-camera.position.z = 2.5
-scene.add(camera)
-
-// Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
-
-/**
- * Sphere
- */
-
-const geometry = new THREE.BoxBufferGeometry(1,1,1)
-
-let shaderMaterial = null
-
-shaderMaterial= new THREE.ShaderMaterial({
-    vertexShader:boilerVertexShader,
-    fragmentShader:boilerFragmentShader,
-    wireframe:true,
-    uniforms:{
-        uTime:{value:0}
-    }
-
-
-})
-
-const Sphere = new THREE.Mesh(geometry,shaderMaterial)
-
-scene.add(Sphere)
-
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true,
-})
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-/**
- * Animate
- */
-const clock = new THREE.Clock()
-let lastElapsedTime = 0
-
-const animateScene = () =>
-{
-    const elapsedTime = clock.getElapsedTime()
-    const deltaTime = elapsedTime - lastElapsedTime
-    lastElapsedTime = elapsedTime
-
-    // Update controls
-    controls.update()
-
-    //Update shader with time
-    shaderMaterial.uniforms.uTime.value = elapsedTime
-
-    // Render
-    renderer.render(scene, camera)
-
-    // Call animateScene again on the next frame
-    window.requestAnimationFrame(animateScene)
-}
-
-animateScene()
