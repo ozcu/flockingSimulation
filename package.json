@@ -20,7 +20,6 @@
     "p5": "^1.4.1",
     "portfinder-sync": "0.0.2",
     "raw-loader": "^4.0.2",
-    "simplex-noise": "^3.0.1",
     "style-loader": "^3.0.0",
     "webpack": "^5.42.1",
     "webpack-cli": "^4.7.2",
