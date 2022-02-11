@@ -1,4 +1,4 @@
-demo -> https://simplex-noise-ribbon.vercel.app/
+p5-Boilerplate-Webpack
 
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
