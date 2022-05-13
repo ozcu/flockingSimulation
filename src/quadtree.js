@@ -20,6 +20,12 @@ class Rectangle{
             point.y >= this.y - this.h &&
             point.y <= this.y + this.h);
     }
+    intersects(range){
+        return !(range.x - range.w > this.x + this.w ||
+             range.x + range.w < this.x - this.w ||
+             range.y - range.h > this.y + this.h ||
+             range.y + range.h < this.y - this.h);
+    }
 
 }
 
@@ -94,5 +100,26 @@ class Quadtree{
             point(p.x,p.y);
         }
 
+    }
+    query(range,result){
+        if(!result){
+            result = [];
+        }
+        if(!this.boundary.intersects(range)){
+            return;
+        }else{
+            for (let p of this.points){
+                if(range.contains(p)){
+                    result.push(p);
+                }
+            }
+            if(this.divided){
+            this.northeast.query(range,result);
+            this.northwest.query(range,result);
+            this.southeast.query(range,result);
+            this.southwest.query(range,result);
+            }
+        }
+        return result;
     }
 }
