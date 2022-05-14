@@ -1,7 +1,8 @@
 class Point{
-    constructor(x,y){
+    constructor(x,y,data){
         this.x = x;
         this.y = y;
+        this.userData = data; 
     }
 
 }
@@ -49,9 +50,8 @@ class Quadtree{
         } else{
             if(!this.divided){
                 this.subdivide();
-                
             }
-           if(this.southwest.insert(point)){
+           if(this.northeast.insert(point)){
                return true;
            }else if(this.northwest.insert(point)){
                return true;
@@ -68,10 +68,15 @@ class Quadtree{
     }
 
     subdivide(){
-        let ne = new Rectangle(this.boundary.x + this.boundary.w / 2, this.boundary.y - this.boundary.h / 2,this.boundary.w / 2,this.boundary.h / 2);
-        let nw = new Rectangle(this.boundary.x - this.boundary.w / 2, this.boundary.y - this.boundary.h / 2,this.boundary.w / 2,this.boundary.h / 2);
-        let se = new Rectangle(this.boundary.x + this.boundary.w / 2, this.boundary.y + this.boundary.h / 2,this.boundary.w / 2,this.boundary.h / 2);
-        let sw = new Rectangle(this.boundary.x - this.boundary.w / 2, this.boundary.y + this.boundary.h / 2,this.boundary.w / 2,this.boundary.h / 2);
+        let x = this.boundary.x
+        let y = this.boundary.y
+        let w = this.boundary.w
+        let h = this.boundary.h
+
+        let ne = new Rectangle(x + w / 2, y - h / 2,w / 2,h / 2);
+        let nw = new Rectangle(x - w / 2, y - h / 2,w / 2,h / 2);
+        let se = new Rectangle(x + w / 2, y + h / 2,w / 2,h / 2);
+        let sw = new Rectangle(x - w / 2, y + h / 2,w / 2,h / 2);
 
         
         this.northeast = new Quadtree(ne,this.capacity);
@@ -82,25 +87,7 @@ class Quadtree{
         this.divided = true;
     }
 
-    show(){
-        stroke(255);
-        strokeWeight(1);
-        rectMode(CENTER);
-        noFill();
-        rect(this.boundary.x,this.boundary.y,this.boundary.w * 2,this.boundary.h * 2);
-        if(this.divided){
-            this.northeast.show();
-            this.northwest.show();
-            this.southeast.show();
-            this.southwest.show();
-        }
 
-        for(let p of this.points){
-            strokeWeight(4);
-            point(p.x,p.y);
-        }
-
-    }
     query(range,result){
         if(!result){
             result = [];
@@ -121,5 +108,25 @@ class Quadtree{
             }
         }
         return result;
+    }
+
+    show(){
+        stroke(255);
+        strokeWeight(1);
+        rectMode(CENTER);
+        noFill();
+        rect(this.boundary.x,this.boundary.y,this.boundary.w * 2,this.boundary.h * 2);
+        if(this.divided){
+            this.northeast.show();
+            this.northwest.show();
+            this.southeast.show();
+            this.southwest.show();
+        }
+
+        for(let p of this.points){
+            strokeWeight(4);
+            point(p.x,p.y);
+        } 
+
     }
 }
