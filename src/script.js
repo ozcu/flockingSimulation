@@ -1,73 +1,88 @@
-flock = [];
+let flock = [];
+let boid = null;
 
 
   function setup(){
+    
+    let width = windowWidth - 250
+    let height = windowHeight - 250 //room for sliders
 
-    createCanvas(windowWidth, windowHeight);
+    createCanvas(width, height);
 
-    let boundary = new Rectangle(windowWidth / 2  ,windowHeight / 2 ,windowWidth / 2 ,windowHeight / 2 );
-    let qt = new Quadtree(boundary, 4);
-    console.log(qt);
+    //INITIATE FLOCK
 
-    for (let i=0;i<2000;i++){
-      let p = new Point(random(windowWidth),random(windowHeight))
-      qt.insert(p);
-    }
+     for(let i=0;i<50;i++){
+      flock.push(new Boid());
+    }  
+    
+   //SLIDERS
 
-    background(0);
-    qt.show();
-
-    stroke(0,255,0);
-    rectMode(CENTER);
-    let range = new Rectangle(random(windowWidth),random(windowHeight),250,250);
-    strokeWeight(2);
-    rect(range.x, range.y, range.w * 2, range.h * 2)
-  
-    let points = qt.query(range);
-    for(let p of points){
-    strokeWeight(10);
-     point(p.x,p.y);
-   } 
-
-    textSize(16);
+    textSize(24);
     noStroke();
 
     alignSlider = createSlider(0, 2, 1, 0.1);
-    alignSlider.position(50,800)
+    alignSlider.position(50,975)
   
     cohesionSlider = createSlider(0, 2, 1, 0.1);
-    cohesionSlider.position(50,850)
+    cohesionSlider.position(50,1025)
 
     separationSlider = createSlider(0, 2, 1, 0.1);
-    separationSlider.position(50,900)
-
-   /*  for(let i=0;i<10;i++){
-      flock.push(new Boid());
-    } */
+    separationSlider.position(50,1075) 
     
   };
 
 
   function draw() {
+    background(51)
+    
+    //DRAW SLIDERS
+    text("Align", alignSlider.x * 2 + alignSlider.width, 975);
+    
+    text("Cohere", cohesionSlider.x * 2 + cohesionSlider.width,1025);
+    
+    text("Separate", separationSlider.x * 2 + separationSlider.width, 1075);
+     
+
+    //CONSTRUCT BOUNDARY & QUADTREE
+    let boundary = new Rectangle(width / 2  ,height / 2 ,width / 2 , height / 2  );
+    let qt = new Quadtree(boundary, 3);
     
 
-    text("Align", alignSlider.x * 2 + alignSlider.width, 800);
-    fill(50);
-    text("Cohere", cohesionSlider.x * 2 + cohesionSlider.width,850);
-    fill(50);
-    text("Separate", separationSlider.x * 2 + separationSlider.width, 900);
-    fill(50);
+    let localBoids = []
 
-    //draw boids
     for(let boid of flock){
+      let point = new Point(boid.position.x,boid.position.y, boid); //referencing boid data
+      qt.insert(point);
+      qt.show()
+
       
+      //debug range
+      
+/*       stroke(0,255,0)
+      rectMode(CENTER)
+      strokeWeight(1)
+      rect(range.x,range.y,range.w *2 ,range.h * 2) */ 
+      
+      let range = new Rectangle(boid.position.x,boid.position.y,25,25); //find optimal range later
+      let points = qt.query(range);
+      
+      //QUERY RESULT
+      for(let p of points){
+
+        let resultBoid = p.userData;
+   
+        localBoids.push(resultBoid)
+      }
+      //console.log(localBoids)
+
       boid.handleEdges();
-      boid.moveFlock(flock);
+      boid.moveFlock(localBoids);  //localBoids
       boid.show();
       boid.update();
-      
- 
-    }   
+     
+    }
 
+    
+    
   };
 
