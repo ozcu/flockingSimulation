@@ -10,9 +10,9 @@ class Boid {
     }
 
     show() {
-        strokeWeight(8);
+        strokeWeight(4);
         stroke(255);
-        point(this.position.x,this.position.y);
+        //point(this.position.x,this.position.y);
     }
 
     update(){
@@ -24,7 +24,7 @@ class Boid {
 
     //Align itself with other boids
     align(boids){
-        let perceptionRadius = 50;
+        let perceptionRadius = 80;
         let steering = createVector();
         let total = 0;
         
@@ -52,7 +52,7 @@ class Boid {
 
     //Steer itself toward avg position of local flockmates
     cohere(boids){
-        let perceptionRadius = 50;
+        let perceptionRadius = 80;
         let steering = createVector();
         let total = 0;
         
@@ -81,7 +81,7 @@ class Boid {
 
     //Steer itself to avoid crowding with local flockmates
     separate(boids){
-        let perceptionRadius = 50;
+        let perceptionRadius = 80;
         let steering = createVector();
         let total = 0;
         
@@ -133,10 +133,10 @@ class Boid {
         }else if(this.position.x < 0){
             this.position.x = width;
         }
-        else if(this.position.y > height){
+        else if(this.position.y > height - 250){
             this.position.y = 0;
         }else if(this.position.y < 0){
-            this.position.y = height;
+            this.position.y = height - 250; //room for sliders
         }
     }
 
